@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+        while (_) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -45,15 +45,13 @@ var Compiler_1 = require("./lib/Compiler");
 var Context_1 = require("./lib/Context");
 var Parser_1 = require("./lib/Parser");
 var WorkerPool_1 = require("./WorkerPool");
-var yargs = require("yargs");
-var helpers_1 = require("yargs/helpers");
 var worker_1 = require("./worker");
 Object.defineProperty(exports, "rawWork", { enumerable: true, get: function () { return worker_1.rawWork; } });
 var window = new jsdom_1.JSDOM().window;
 global['document'] = window.document;
 // Initialise context using lib/init.btx
 var globalContext = new Context_1.Context();
-Compiler_1.Compiler.compile(Parser_1.Parser.parse((0, fs_1.readFileSync)((0, path_1.join)(__dirname, '../src/lib/init.btx')).toString()), globalContext);
+Compiler_1.Compiler.compile(Parser_1.Parser.parse(fs_1.readFileSync(path_1.join(__dirname, '../src/lib/init.btx')).toString()), globalContext);
 var pool = new WorkerPool_1.WorkerPool(4);
 function runWorker(code, preamble, options, renderOptions) {
     return pool.work({
@@ -79,17 +77,9 @@ exports.render = render;
 function getTimestamp() {
     return new Date().toISOString().replace('T', ' ').substring(0, 19);
 }
-var argv = yargs((0, helpers_1.hideBin)(process.argv))
-    .option('port', {
-    alias: 'p',
-    describe: 'Port to bind on',
-    default: 7200,
-    number: true,
-}).parseSync();
-var port = argv.port;
 function serve() {
     var requests = 0;
-    var server = (0, http_1.createServer)(function (request, response) {
+    var server = http_1.createServer(function (request, response) {
         if (request.method !== 'POST') {
             response.statusCode = 400;
             response.setHeader('Content-Type', 'text/plain');
@@ -102,7 +92,7 @@ function serve() {
                 var _a;
                 var start = new Date();
                 var id = ++requests;
-                console.log("[".concat(getTimestamp(), "] #").concat(id, " Accepted."));
+                console.log("[" + getTimestamp() + "] #" + id + " Accepted.");
                 var post = JSON.parse(body_1);
                 var code = (_a = post['code']) !== null && _a !== void 0 ? _a : '';
                 var renderOptions = {
@@ -113,7 +103,7 @@ function serve() {
                 options.equationMode = post['equationMode'] === true;
                 runWorker(code, post['preamble'], options, renderOptions).then(function (result) {
                     var ms = new Date().getTime() - start.getTime();
-                    console.log("[".concat(getTimestamp(), "] #").concat(id, " Resolved (").concat(ms, " ms)."));
+                    console.log("[" + getTimestamp() + "] #" + id + " Resolved (" + ms + " ms).");
                     response.statusCode = 200;
                     response.setHeader('Content-Type', 'application/json');
                     response.end(JSON.stringify(result));
@@ -121,8 +111,8 @@ function serve() {
             });
         }
     });
-    server.listen(port, '127.0.0.1', function () {
-        console.log("[".concat(getTimestamp(), "] bTeX running at http://127.0.0.1:").concat(port));
+    server.listen(7200, '127.0.0.1', function () {
+        console.log("[" + getTimestamp() + "] bTeX running at http://127.0.0.1:7200");
     });
 }
 function test() {
@@ -130,12 +120,12 @@ function test() {
         var result, katexCss;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, runWorker((0, fs_1.readFileSync)('./test/test.btx').toString())];
+                case 0: return [4 /*yield*/, runWorker(fs_1.readFileSync('./test/test.btx').toString())];
                 case 1:
                     result = _a.sent();
                     console.log(result);
                     katexCss = 'https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css';
-                    (0, fs_1.writeFileSync)('test/test.html', "<!DOCTYPE html><head><meta charset=\"UTF-8\"><link rel=\"stylesheet\" href=\"".concat(katexCss, "\"><link rel=\"stylesheet\" href=\"test.css\"><title>Test Page</title></head><body>").concat(result.html, "</body>"));
+                    fs_1.writeFileSync('test/test.html', "<!DOCTYPE html><head><meta charset=\"UTF-8\"><link rel=\"stylesheet\" href=\"" + katexCss + "\"><link rel=\"stylesheet\" href=\"test.css\"><title>Test Page</title></head><body>" + result.html + "</body>");
                     process.exit(0);
                     return [2 /*return*/];
             }

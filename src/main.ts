@@ -7,8 +7,6 @@ import { Context } from './lib/Context';
 import { RenderOptions } from './lib/Element';
 import { Parser } from './lib/Parser';
 import { WorkerPool, WorkerResult } from './WorkerPool';
-import yargs = require('yargs');
-import { hideBin } from 'yargs/helpers';
 export { rawWork } from './worker';
 
 const window = new JSDOM().window;
@@ -51,15 +49,6 @@ function getTimestamp() {
   return new Date().toISOString().replace('T', ' ').substring(0, 19);
 }
 
-const argv = yargs(hideBin(process.argv))
-  .option('port', {
-    alias: 'p',
-    describe: 'Port to bind on',
-    default: 7200,
-    number: true,
-  }).parseSync();
-const port = argv.port;
-
 function serve() {
   let requests = 0;
   let server = createServer((request, response) => {
@@ -98,8 +87,8 @@ function serve() {
     }
   });
 
-  server.listen(port, '127.0.0.1', () => {
-    console.log(`[${getTimestamp()}] bTeX running at http://127.0.0.1:${port}`);
+  server.listen(7200, '127.0.0.1', () => {
+    console.log(`[${getTimestamp()}] bTeX running at http://127.0.0.1:7200`);
   });
 }
 

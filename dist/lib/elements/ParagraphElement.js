@@ -1,12 +1,10 @@
 "use strict";
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ParagraphElement = void 0;
@@ -30,7 +28,7 @@ var ParagraphElement = /** @class */ (function () {
     // Incomplete clone - children are not cloned.
     ParagraphElement.prototype.clone = function () {
         var paragraph = new ParagraphElement();
-        paragraph.children = __spreadArray([], this.children, true);
+        paragraph.children = __spreadArrays(this.children);
         paragraph.style = this.style;
         return paragraph;
     };
@@ -197,6 +195,7 @@ var ParagraphElement = /** @class */ (function () {
         this.children.push(element);
     };
     ParagraphElement.prototype.render = function (options) {
+        var _a;
         if (this.isEmpty())
             return [];
         // In some cases the <p> or <div> tag is unnecessary
@@ -211,13 +210,13 @@ var ParagraphElement = /** @class */ (function () {
         // Create a <p> element only if it does not contain non-math containers,
         // because <p> elements cannot be nested
         var name = 'p';
-        for (var _i = 0, _a = this.children; _i < _a.length; _i++) {
-            var child = _a[_i];
+        for (var _i = 0, _b = this.children; _i < _b.length; _i++) {
+            var child = _b[_i];
             if (child.name !== 'span' &&
                 child.name !== 'math' &&
                 child.name !== 'bookmark' &&
                 child.name !== 'ref' &&
-                !(child === null || child === void 0 ? void 0 : child.isInline)) {
+                !((_a = child) === null || _a === void 0 ? void 0 : _a.isInline)) {
                 name = 'div';
                 break;
             }
@@ -240,7 +239,7 @@ var ParagraphElement = /** @class */ (function () {
             // Turn diagrams into \text{...}
             if (child instanceof DiagramElement_1.DiagramElement) {
                 child.render(options);
-                var node = document.createTextNode("\\rule{0em}{".concat(child.renderedHeight / 2, "em}\\text{").concat(child.id, "}"));
+                var node = document.createTextNode("\\rule{0em}{" + child.renderedHeight / 2 + "em}\\text{" + child.id + "}");
                 result.push(node);
                 continue;
             }
